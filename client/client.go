@@ -1,4 +1,4 @@
-package client
+package main
 
 import (
 	"context"
@@ -18,6 +18,10 @@ type BidResponse struct {
 	Bid string `json:"bid"`
 }
 
+func main() {
+	StartClient()
+}
+
 func StartClient() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*300)
 	defer cancel()
@@ -29,8 +33,12 @@ func StartClient() {
 	}
 
 	response, err := client.Do(request)
-	if err != nil {
-		log.Println(err)
+	if err != nil || response.StatusCode != http.StatusOK {
+		if response.StatusCode != http.StatusOK {
+			log.Println("Status code:", response.StatusCode)
+		} else {
+			log.Println(err)
+		}
 		return
 	}
 	defer response.Body.Close()
